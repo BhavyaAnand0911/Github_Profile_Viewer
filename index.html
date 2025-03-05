@@ -4,8 +4,70 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Angular Assignment</title>
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+    <link rel="stylesheet" href="./style.css" />
   </head>
-  <body>
-    Hello World!
+  <body ng-app="GitHubProfileViewer" ng-controller="MainController">
+    <div class="container">
+      <h2 class="text-center">GitHub Profile Viewer</h2>
+      <div class="input-group">
+        <input
+          type="text"
+          class="form-control"
+          ng-model="searchUser"
+          placeholder="Search user"
+        />
+        <span class="input-group-btn">
+          <button class="btn btn-primary" ng-click="search()">Search</button>
+        </span>
+      </div>
+      <div class="row" ng-if="!selectedUser">
+        <div class="col-md-4" ng-repeat="user in users">
+          <div class="profile-card">
+            <div class="profile-header">
+              <img ng-src="{{user.avatar_url}}" alt="User Avatar" />
+              <div>
+                <h4>{{user.name}}</h4>
+                <p>@{{user.login}}</p>
+              </div>
+            </div>
+            <p>{{user.bio}}</p>
+            <button
+              class="btn btn-info btn-sm"
+              ng-click="viewProfile(user.login)"
+            >
+              View Profile
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="profile-page" ng-if="selectedUser">
+        <div class="profile-header-large">
+          <img ng-src="{{selectedUser.avatar_url}}" alt="User Avatar" />
+          <div>
+            <h3>{{selectedUser.name}}</h3>
+            <h6>(@{{selectedUser.login}})</h6>
+          </div>
+        </div>
+        <p>{{selectedUser.bio}}</p>
+        <div class="user-stats">
+          <p><strong>Repositories:</strong> {{selectedUser.public_repos}}</p>
+          <p><strong>Followers:</strong> {{selectedUser.followers}}</p>
+        </div>
+        <h4>Pinned Repositories</h4>
+        <div class="repo-card" ng-repeat="repo in repos">
+          <h5>{{repo.name}}</h5>
+          <p>{{repo.description}}</p>
+        </div>
+        <button class="btn btn-secondary" ng-click="clearProfile()">
+          Back to Search
+        </button>
+      </div>
+    </div>
+    <script src="./app.js"></script>
   </body>
 </html>
