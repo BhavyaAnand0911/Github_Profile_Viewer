@@ -1,0 +1,19 @@
+<div class="profile-page" ng-if="selectedUser">
+  <div class="profile-header-large">
+    <img ng-src="{{selectedUser.avatar_url}}" alt="User Avatar" />
+    <div>
+      <h3>{{selectedUser.name}}</h3>
+      <h6>(@{{selectedUser.login}})</h6>
+    </div>
+  </div>
+  <p>{{selectedUser.bio}}</p>
+  <div class="user-stats">
+    <p><strong>Repositories:</strong> {{selectedUser.public_repos}}</p>
+    <p><strong>Followers:</strong> {{selectedUser.followers}}</p>
+  </div>
+  <h4>Pinned Repositories</h4>
+  <div class="repo-card" ng-repeat="repo in repos">
+    <h5>{{repo.name}}</h5>
+    <p>{{repo.description}}</p>
+  </div>
+</div>

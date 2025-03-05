@@ -1,10 +1,24 @@
-var app = angular.module("GitHubProfileViewer", []);
-app.controller("MainController", function ($scope, $http) {
-  $scope.users = [];
-  $scope.selectedUser = null;
-  $scope.repos = [];
+var app = angular.module("GitHubProfileViewer", ["ngRoute"]);
 
-  // Search for users
+app.config(function ($routeProvider) {
+  $routeProvider
+    .when("/", {
+      templateUrl: "search.html",
+      controller: "SearchController",
+    })
+    .when("/profile/:username", {
+      templateUrl: "profile.html",
+      controller: "ProfileController",
+    })
+    .otherwise({
+      redirectTo: "/",
+    });
+});
+
+app.controller("SearchController", function ($scope, $http, $location) {
+  $scope.users = [];
+  $scope.searchUser = "";
+
   $scope.search = function () {
     $http
       .get("https://api.github.com/search/users?q=" + $scope.searchUser)
@@ -22,8 +36,18 @@ app.controller("MainController", function ($scope, $http) {
   };
 
   $scope.viewProfile = function (username) {
+    $location.path("/profile/" + username);
+  };
+});
+
+app.controller(
+  "ProfileController",
+  function ($scope, $http, $routeParams, $location) {
+    $scope.selectedUser = null;
+    $scope.repos = [];
+
     $http
-      .get("https://api.github.com/users/" + username)
+      .get("https://api.github.com/users/" + $routeParams.username)
       .then(function (response) {
         $scope.selectedUser = response.data;
         return $http.get(response.data.repos_url);
@@ -31,10 +55,5 @@ app.controller("MainController", function ($scope, $http) {
       .then(function (response) {
         $scope.repos = response.data;
       });
-  };
-
-  $scope.clearProfile = function () {
-    $scope.selectedUser = null;
-    $scope.repos = [];
-  };
-});
+  }
+);

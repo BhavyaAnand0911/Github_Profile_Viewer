@@ -1,0 +1,41 @@
+<div class="container">
+  <div class="head-container">
+    <img src="./image.png" />
+    <h2 class="text-left">GitHub Profile Viewer</h2>
+  </div>
+  <div class="search-page">
+    <div class="input-group">
+      <input
+        type="text"
+        class="form-control"
+        ng-model="searchUser"
+        placeholder="Search user"
+      />
+      <span class="input-group-btn">
+        <button class="searchBtn btn btn-primary" ng-click="search()">
+          Search
+        </button>
+      </span>
+    </div>
+    <div class="row">
+      <div class="col-md-4" ng-repeat="user in users">
+        <div class="profile-card">
+          <div class="profile-header">
+            <img ng-src="{{user.avatar_url}}" alt="User Avatar" />
+            <div>
+              <h4>{{user.name}}</h4>
+              <p>@{{user.login}}</p>
+            </div>
+          </div>
+          <p>{{user.bio}}</p>
+          <button
+            class="btn btn-info btn-sm"
+            ng-click="viewProfile(user.login)"
+          >
+            View Profile
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

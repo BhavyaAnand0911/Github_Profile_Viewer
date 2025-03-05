@@ -12,7 +12,7 @@
 .profile-header img {
   width: 50px;
   height: 50px;
-  border-radius: 50%;
+  border-radius: 10%;
   margin-right: 10px;
 }
 .repo-card {
@@ -38,4 +38,27 @@
   height: 80px;
   border-radius: 50%;
   margin-right: 15px;
+}
+.head-container {
+  display: flex;
+  margin-top: 30px;
+  margin-bottom: 20px;
+}
+img {
+  height: 50px;
+  width: 50px;
+  margin-right: 20px;
+}
+.searchBtn {
+  margin-left: 6px;
+}
+.profile-page {
+  margin: auto;
+  margin-top: 30px;
+  margin-bottom: 30px;
+  padding: 10px;
+  height: max-content;
+  width: 800px;
+  border: 2px solid grey;
+  border-radius: 10px;
 }
