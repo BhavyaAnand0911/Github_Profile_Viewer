@@ -1,7 +1,7 @@
 var app = angular.module("GitHubProfileViewer", ["ngRoute"]);
 
 app.factory("GithubService", function ($http) {
-  const TOKEN = "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";
+  const TOKEN = "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";
 
   return {
     get: function (url) {
@@ -93,9 +93,7 @@ app.controller(
             return Promise.all(promises);
           }
         })
-        .catch(e, (error) => {
-          console.log(error);
-        })
+        .catch()
         .finally(() => {
           $scope.loading = false;
         });
