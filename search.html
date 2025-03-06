@@ -11,11 +11,6 @@
         ng-model="searchUser"
         placeholder="Search user"
       />
-      <span class="input-group-btn">
-        <button class="searchBtn btn btn-primary" ng-click="search()">
-          Search
-        </button>
-      </span>
     </div>
     <div class="row">
       <div class="col-md-4" ng-repeat="user in users">
@@ -23,11 +18,11 @@
           <div class="profile-header">
             <img ng-src="{{user.avatar_url}}" alt="User Avatar" />
             <div>
-              <h4>{{user.name}}</h4>
-              <p>@{{user.login}}</p>
+              <h4>{{user.name || "Unknown User"}}</h4>
+              <p>@{{user.login || "N/A"}}</p>
             </div>
           </div>
-          <p>{{user.bio}}</p>
+          <p>{{user.bio || "No bio available"}}</p>
           <button
             class="btn btn-info btn-sm"
             ng-click="viewProfile(user.login)"
@@ -37,5 +32,6 @@
         </div>
       </div>
     </div>
+    <p class="text-center" ng-if="loading">Loading more users...</p>
   </div>
 </div>

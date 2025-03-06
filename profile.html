@@ -1,19 +1,22 @@
 <div class="profile-page" ng-if="selectedUser">
   <div class="profile-header-large">
-    <img ng-src="{{selectedUser.avatar_url}}" alt="User Avatar" />
+    <img
+      ng-src="{{selectedUser.avatar_url || 'default-avatar.png'}}"
+      alt="User Avatar"
+    />
     <div>
-      <h3>{{selectedUser.name}}</h3>
-      <h6>(@{{selectedUser.login}})</h6>
+      <h3>{{selectedUser.name || "Unknown"}}</h3>
+      <h6>(@{{selectedUser.login || "N/A"}})</h6>
     </div>
   </div>
-  <p>{{selectedUser.bio}}</p>
+  <p>{{selectedUser.bio || "No bio available"}}</p>
   <div class="user-stats">
-    <p><strong>Repositories:</strong> {{selectedUser.public_repos}}</p>
-    <p><strong>Followers:</strong> {{selectedUser.followers}}</p>
+    <p><strong>Repositories:</strong> {{selectedUser.public_repos || 0}}</p>
+    <p><strong>Followers:</strong> {{selectedUser.followers || 0}}</p>
   </div>
   <h4>Pinned Repositories</h4>
   <div class="repo-card" ng-repeat="repo in repos">
     <h5>{{repo.name}}</h5>
-    <p>{{repo.description}}</p>
+    <p>{{repo.description || "No description available"}}</p>
   </div>
 </div>
