@@ -45,6 +45,7 @@ app.controller(
     $scope.rateLimit = null;
     $scope.rateLimitError = false;
     $scope.lastId = 0; // For default users pagination
+    $scope.pendingRequests = 0; // Counter for tracking pending API requests
     let searchTimeout;
 
     function checkRateLimit() {
@@ -60,8 +61,8 @@ app.controller(
       if ($scope.loading) return;
       $scope.loading = true;
 
-      let url = "https://api.github.com/users?per_page=10";
-      // since parameter for pagination if there is an existing id.
+      let url = "https://api.github.com/users?per_page=12";
+      // basically show the users with id greater than the last fetched user
       if ($scope.lastId > 0) {
         url += `&since=${$scope.lastId}`;
       }
@@ -69,32 +70,45 @@ app.controller(
       GithubService.get(url)
         .then(function (response) {
           if (response.data && response.data.length > 0) {
-            const promises = [];
+            // Track how many secondary requests we'll make
+            $scope.pendingRequests = response.data.length;
 
             response.data.forEach((user) => {
-              const promise = GithubService.get(
-                `https://api.github.com/users/${user.login}`
-              ).then((detailsResponse) => {
-                const enhancedUser = Object.assign(
-                  {},
-                  user,
-                  detailsResponse.data
-                );
-                $scope.users.push(enhancedUser);
-                // storing the last user for pagination
-                if (user.id > $scope.lastId) {
-                  $scope.lastId = user.id;
-                }
-              });
+              // For each user, fetch their details
+              GithubService.get(`https://api.github.com/users/${user.login}`)
+                .then((detailsResponse) => {
+                  const enhancedUser = Object.assign(
+                    {},
+                    user,
+                    detailsResponse.data
+                  );
+                  $scope.users.push(enhancedUser);
 
-              promises.push(promise);
+                  // Store the highest user ID for pagination
+                  if (user.id > $scope.lastId) {
+                    $scope.lastId = user.id;
+                  }
+
+                  // Decrement our counter and check if we're done
+                  $scope.pendingRequests--;
+                  if ($scope.pendingRequests <= 0) {
+                    $scope.loading = false;
+                  }
+                })
+                .catch(function () {
+                  // Still decrement on error
+                  $scope.pendingRequests--;
+                  if ($scope.pendingRequests <= 0) {
+                    $scope.loading = false;
+                  }
+                });
             });
-
-            return Promise.all(promises);
+          } else {
+            // No results, so we're done loading
+            $scope.loading = false;
           }
         })
-        .catch()
-        .finally(() => {
+        .catch(function () {
           $scope.loading = false;
         });
     }
@@ -139,31 +153,44 @@ app.controller(
       )
         .then(function (response) {
           if (response.data.items && response.data.items.length > 0) {
-            const promises = [];
+            // Track how many requests we'll make
+            $scope.pendingRequests = response.data.items.length;
 
             response.data.items.forEach((user) => {
-              const promise = GithubService.get(
-                `https://api.github.com/users/${user.login}`
-              ).then((detailsResponse) => {
-                const enhancedUser = Object.assign(
-                  {},
-                  user,
-                  detailsResponse.data
-                );
-                $scope.users.push(enhancedUser);
-              });
+              GithubService.get(`https://api.github.com/users/${user.login}`)
+                .then((detailsResponse) => {
+                  const enhancedUser = Object.assign(
+                    {},
+                    user,
+                    detailsResponse.data
+                  );
+                  $scope.users.push(enhancedUser);
 
-              promises.push(promise);
+                  // Decrement our counter and check if we're done
+                  $scope.pendingRequests--;
+                  if ($scope.pendingRequests <= 0) {
+                    // All data loaded, increment page for next batch
+                    $scope.page++;
+                    $scope.loading = false;
+                    checkRateLimit();
+                  }
+                })
+                .catch(function () {
+                  // Still decrement on error
+                  $scope.pendingRequests--;
+                  if ($scope.pendingRequests <= 0) {
+                    $scope.page++;
+                    $scope.loading = false;
+                    checkRateLimit();
+                  }
+                });
             });
-
-            Promise.all(promises).then(() => {
-              $scope.page++;
-              checkRateLimit();
-            });
+          } else {
+            // No results, so we're done loading
+            $scope.loading = false;
           }
         })
-        .catch()
-        .finally(() => {
+        .catch(function () {
           $scope.loading = false;
         });
     };
