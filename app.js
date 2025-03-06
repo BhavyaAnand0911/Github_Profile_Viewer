@@ -45,7 +45,7 @@ app.controller(
     $scope.rateLimit = null;
     $scope.rateLimitError = false;
     $scope.lastId = 0; // For default users pagination
-    $scope.pendingRequests = 0; // Counter for tracking pending API requests
+    $scope.pendingRequests = 0; // how many pending api req are there
     let searchTimeout;
 
     function checkRateLimit() {
@@ -70,11 +70,10 @@ app.controller(
       GithubService.get(url)
         .then(function (response) {
           if (response.data && response.data.length > 0) {
-            // Track how many secondary requests we'll make
+            // secondary api calls that are being made
             $scope.pendingRequests = response.data.length;
 
             response.data.forEach((user) => {
-              // For each user, fetch their details
               GithubService.get(`https://api.github.com/users/${user.login}`)
                 .then((detailsResponse) => {
                   const enhancedUser = Object.assign(
@@ -84,19 +83,18 @@ app.controller(
                   );
                   $scope.users.push(enhancedUser);
 
-                  // Store the highest user ID for pagination
                   if (user.id > $scope.lastId) {
                     $scope.lastId = user.id;
                   }
 
-                  // Decrement our counter and check if we're done
+                  // decrement after each call
                   $scope.pendingRequests--;
                   if ($scope.pendingRequests <= 0) {
                     $scope.loading = false;
                   }
                 })
                 .catch(function () {
-                  // Still decrement on error
+                  // decrement force
                   $scope.pendingRequests--;
                   if ($scope.pendingRequests <= 0) {
                     $scope.loading = false;
@@ -104,7 +102,6 @@ app.controller(
                 });
             });
           } else {
-            // No results, so we're done loading
             $scope.loading = false;
           }
         })
@@ -131,7 +128,6 @@ app.controller(
         return;
       }
 
-      // Reset for search
       $scope.page = 1;
       $scope.users = [];
       $scope.loadMore();
@@ -153,7 +149,6 @@ app.controller(
       )
         .then(function (response) {
           if (response.data.items && response.data.items.length > 0) {
-            // Track how many requests we'll make
             $scope.pendingRequests = response.data.items.length;
 
             response.data.items.forEach((user) => {
@@ -166,17 +161,14 @@ app.controller(
                   );
                   $scope.users.push(enhancedUser);
 
-                  // Decrement our counter and check if we're done
                   $scope.pendingRequests--;
                   if ($scope.pendingRequests <= 0) {
-                    // All data loaded, increment page for next batch
                     $scope.page++;
                     $scope.loading = false;
                     checkRateLimit();
                   }
                 })
                 .catch(function () {
-                  // Still decrement on error
                   $scope.pendingRequests--;
                   if ($scope.pendingRequests <= 0) {
                     $scope.page++;
@@ -186,7 +178,6 @@ app.controller(
                 });
             });
           } else {
-            // No results, so we're done loading
             $scope.loading = false;
           }
         })
