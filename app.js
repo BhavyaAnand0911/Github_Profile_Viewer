@@ -1,7 +1,7 @@
 var app = angular.module("GitHubProfileViewer", ["ngRoute"]);
 
 app.factory("GithubService", function ($http) {
-  const TOKEN = "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";
+  const TOKEN = ""; // will have to manually add the token here as github doesn't allow a push if encouters a token
 
   return {
     get: function (url) {
