@@ -1,7 +1,7 @@
 var app = angular.module("GitHubProfileViewer", ["ngRoute"]);
 
 app.factory("GithubService", function ($http) {
-  const TOKEN = window.ENV ? window.ENV.TOKEN : "";
+  const TOKEN = "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";
 
   return {
     get: function (url) {
